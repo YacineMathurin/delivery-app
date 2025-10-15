@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,8 @@ import {
   Target,
   Zap,
   ArrowLeft,
+  ChevronUp,
+  X,
 } from "lucide-react";
 
 const TransportationApp = () => {
@@ -26,6 +29,7 @@ const TransportationApp = () => {
   const [routeInfo, setRouteInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const directionsServiceRef = useRef(null);
@@ -168,6 +172,7 @@ const TransportationApp = () => {
   const handleBackToPlanning = () => {
     setShowMap(false);
     setRouteInfo(null);
+    setDrawerOpen(false);
   };
 
   const calculatePrice = () => {
@@ -179,91 +184,115 @@ const TransportationApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-600 rounded-lg">
-                <Navigation className="h-6 w-6 text-white" />
+    <div className="relative w-screen h-screen overflow-hidden">
+      {!showMap ? (
+        /* Trip Planning View */
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+          {/* Header */}
+          <header className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-blue-600 rounded-lg">
+                    <Navigation className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      RouteGo
+                    </h1>
+                    <p className="text-sm text-gray-600">
+                      Smart Transportation Planning
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="px-3 py-1">
+                  <Zap className="h-4 w-4 mr-1" />
+                  Live Routes
+                </Badge>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">RouteGo</h1>
-                <p className="text-sm text-gray-600">
-                  Smart Transportation Planning
+            </div>
+          </header>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-md mx-auto">
+              <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center space-x-2 justify-center">
+                    <Route className="h-5 w-5 text-blue-600" />
+                    <span>Plan Your Route</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="origin"
+                      className="flex items-center space-x-2"
+                    >
+                      <MapPin className="h-4 w-4 text-green-600" />
+                      <span>From</span>
+                    </Label>
+                    <Input
+                      id="origin"
+                      placeholder="Enter pickup location"
+                      value={origin}
+                      onChange={(e) => setOrigin(e.target.value)}
+                      className="pl-4 py-3 text-lg"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="destination"
+                      className="flex items-center space-x-2"
+                    >
+                      <Target className="h-4 w-4 text-red-600" />
+                      <span>To</span>
+                    </Label>
+                    <Input
+                      id="destination"
+                      placeholder="Enter destination"
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                      className="pl-4 py-3 text-lg"
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleFindRoute}
+                    disabled={!origin || !destination || isLoading}
+                    className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg"
+                  >
+                    {isLoading ? "Finding Route..." : "Find Route"}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Map View - Full Screen */
+        <>
+          {/* Full Screen Map Background */}
+          <div ref={mapRef} className="absolute inset-0 w-full h-full">
+            {/* Fallback content */}
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+              <div className="text-center">
+                <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600">Loading Google Maps...</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Route: {origin} → {destination}
                 </p>
               </div>
             </div>
-            <Badge variant="secondary" className="px-3 py-1">
-              <Zap className="h-4 w-4 mr-1" />
-              Live Routes
-            </Badge>
           </div>
-        </div>
-      </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {!showMap ? (
-          /* Trip Planning View */
-          <div className="max-w-md mx-auto">
-            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-2 justify-center">
-                  <Route className="h-5 w-5 text-blue-600" />
-                  <span>Plan Your Route</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="origin"
-                    className="flex items-center space-x-2"
-                  >
-                    <MapPin className="h-4 w-4 text-green-600" />
-                    <span>From</span>
-                  </Label>
-                  <Input
-                    id="origin"
-                    placeholder="Enter pickup location"
-                    value={origin}
-                    onChange={(e) => setOrigin(e.target.value)}
-                    className="pl-4 py-3 text-lg"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="destination"
-                    className="flex items-center space-x-2"
-                  >
-                    <Target className="h-4 w-4 text-red-600" />
-                    <span>To</span>
-                  </Label>
-                  <Input
-                    id="destination"
-                    placeholder="Enter destination"
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
-                    className="pl-4 py-3 text-lg"
-                  />
-                </div>
-
-                <Button
-                  onClick={handleFindRoute}
-                  disabled={!origin || !destination || isLoading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 py-3 text-lg"
-                >
-                  {isLoading ? "Finding Route..." : "Find Route"}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
-          /* Map View */
-          <div className="flex flex-col h-[calc(100vh-200px)]">
-            {/* Top Bar - Destination and Back Button */}
-            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm mb-4">
+          {/* Top Search Bar - Floating */}
+          <motion.div
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="absolute top-4 left-4 right-4 z-20"
+          >
+            <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-md">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-4">
                   <Button
@@ -287,7 +316,7 @@ const TransportationApp = () => {
                   </div>
 
                   {routeInfo && (
-                    <div className="flex items-center space-x-4 text-sm">
+                    <div className="hidden md:flex items-center space-x-4 text-sm">
                       <div className="flex items-center space-x-1">
                         <Clock className="h-4 w-4 text-blue-600" />
                         <span>{routeInfo.duration}</span>
@@ -305,85 +334,157 @@ const TransportationApp = () => {
                 </div>
               </CardContent>
             </Card>
+          </motion.div>
 
-            {/* Map */}
-            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm flex-1 mb-4">
-              <CardContent className="p-0 h-full">
-                <div
-                  ref={mapRef}
-                  className="w-full h-full rounded-lg"
-                  style={{ minHeight: "400px" }}
+          {/* Bottom Drawer Trigger */}
+          <AnimatePresence>
+            {!drawerOpen && (
+              <motion.div
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20"
+              >
+                <Button
+                  onClick={() => setDrawerOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700 shadow-2xl px-6 py-6 rounded-full"
+                  size="lg"
                 >
-                  {/* Fallback content */}
-                  <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Loading Google Maps...</p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        Route: {origin} → {destination}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  <Car className="h-5 w-5 mr-2" />
+                  Choose Vehicle
+                  <ChevronUp className="h-5 w-5 ml-2" />
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            {/* Bottom Bar - Vehicle Selection */}
-            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2 mb-3">
-                  <Car className="h-5 w-5 text-blue-600" />
-                  <span className="font-medium">Choose Vehicle</span>
-                </div>
+          {/* Bottom Drawer - Vehicle Selection */}
+          <AnimatePresence>
+            {drawerOpen && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setDrawerOpen(false)}
+                  className="absolute inset-0 bg-black/30 z-30"
+                />
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                  {vehicleTypes.map((vehicle) => {
-                    const IconComponent = vehicle.icon;
-                    return (
-                      <div
-                        key={vehicle.id}
-                        onClick={() => setSelectedVehicle(vehicle.id)}
-                        className={`p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                          selectedVehicle === vehicle.id
-                            ? "border-blue-500 bg-blue-50 shadow-md"
-                            : "border-gray-200 bg-white hover:border-gray-300"
-                        }`}
-                      >
-                        <div className="flex flex-col items-center space-y-2">
-                          <div
-                            className={`p-2 rounded-lg ${vehicle.color} text-white`}
-                          >
-                            <IconComponent className="h-5 w-5" />
+                {/* Drawer */}
+                <motion.div
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "100%" }}
+                  transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                  className="absolute bottom-0 left-0 right-0 z-40 max-h-[80vh]"
+                >
+                  <Card className="shadow-2xl border-0 bg-white rounded-t-3xl rounded-b-none">
+                    <CardContent className="p-6">
+                      {/* Drawer Handle */}
+                      <div className="flex justify-center mb-4">
+                        <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+                      </div>
+
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center space-x-2">
+                          <Car className="h-6 w-6 text-blue-600" />
+                          <h3 className="text-xl font-bold">Choose Vehicle</h3>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setDrawerOpen(false)}
+                          className="rounded-full"
+                        >
+                          <X className="h-5 w-5" />
+                        </Button>
+                      </div>
+
+                      {/* Route Info */}
+                      {routeInfo && (
+                        <div className="flex items-center justify-around mb-6 p-4 bg-blue-50 rounded-xl">
+                          <div className="text-center">
+                            <Clock className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+                            <div className="text-xs text-gray-600">
+                              Duration
+                            </div>
+                            <div className="font-semibold">
+                              {routeInfo.duration}
+                            </div>
                           </div>
                           <div className="text-center">
-                            <h3 className="font-semibold text-sm text-gray-900">
-                              {vehicle.name}
-                            </h3>
+                            <Route className="h-5 w-5 text-green-600 mx-auto mb-1" />
                             <div className="text-xs text-gray-600">
-                              <div>{vehicle.capacity}</div>
-                              <div className="font-medium text-green-600">
-                                {vehicle.price}
-                              </div>
+                              Distance
+                            </div>
+                            <div className="font-semibold">
+                              {routeInfo.distance}
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <DollarSign className="h-5 w-5 text-green-600 mx-auto mb-1" />
+                            <div className="text-xs text-gray-600">Price</div>
+                            <div className="font-semibold">
+                              ${calculatePrice()}
                             </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      )}
 
-                {routeInfo && (
-                  <div className="mt-4 pt-4 border-t">
-                    <Button className="w-full bg-green-600 hover:bg-green-700">
-                      Book {selectedVehicleData?.name} - ${calculatePrice()}
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
+                      {/* Vehicle Grid */}
+                      <div className="grid grid-cols-1 gap-4 mb-6 max-h-[40vh] overflow-y-auto">
+                        {vehicleTypes.map((vehicle) => {
+                          const IconComponent = vehicle.icon;
+                          return (
+                            <motion.div
+                              key={vehicle.id}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => setSelectedVehicle(vehicle.id)}
+                              className={`p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
+                                selectedVehicle === vehicle.id
+                                  ? "border-blue-500 bg-blue-50 shadow-lg"
+                                  : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-md"
+                              }`}
+                            >
+                              <div className="flex  items-center space-y-3">
+                                <div
+                                  className={`p-3 rounded-xl ${vehicle.color} text-white mr-4`}
+                                >
+                                  <IconComponent className="h-6 w-6" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-gray-900">
+                                    {vehicle.name}
+                                  </h4>
+                                  <div className="text-xs text-gray-600 mt-1">
+                                    {vehicle.capacity}
+                                  </div>
+                                  <div className="font-bold text-green-600 mt-1">
+                                    {vehicle.price}
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Book Button */}
+                      {routeInfo && (
+                        <Button className="w-full bg-green-600 hover:bg-green-700 py-6 text-lg font-semibold rounded-xl">
+                          Book {selectedVehicleData?.name} - ${calculatePrice()}
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </>
+      )}
     </div>
   );
 };
