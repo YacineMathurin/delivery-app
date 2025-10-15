@@ -10,6 +10,7 @@ import {
   MapPin,
   Navigation,
   Car,
+  Euro,
   Truck,
   Bike,
   Clock,
@@ -25,7 +26,7 @@ import {
 const TransportationApp = () => {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [selectedVehicle, setSelectedVehicle] = useState("car");
+  const [selectedVehicle, setSelectedVehicle] = useState("");
   const [routeInfo, setRouteInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -472,8 +473,13 @@ const TransportationApp = () => {
                       </div>
 
                       {/* Book Button */}
-                      {routeInfo && (
-                        <Button className="w-full bg-green-600 hover:bg-green-700 py-6 text-lg font-semibold rounded-xl">
+                      {/* {routeInfo && ( */}
+                      {selectedVehicleData && (
+                        <Button
+                          onClick={() => setDrawerOpen(true)}
+                          className="w-full bg-yellow-600 hover:bg-blue-700 shadow-2xl px-6 py-6 rounded-full"
+                          size="lg"
+                        >
                           Book {selectedVehicleData?.name} - ${calculatePrice()}
                         </Button>
                       )}
