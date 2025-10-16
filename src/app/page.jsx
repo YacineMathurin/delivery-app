@@ -70,7 +70,9 @@ const TransportationApp = () => {
     },
   ];
 
-  const selectedVehicleData = vehicleTypes.find((v) => v.id === selectedVehicle);
+  const selectedVehicleData = vehicleTypes.find(
+    (v) => v.id === selectedVehicle
+  );
 
   const steps = [
     { id: 0, name: "Vehicle", completed: selectedVehicle !== "" },
@@ -96,7 +98,11 @@ const TransportationApp = () => {
   };
 
   const handleBooking = () => {
-    alert(`Booking confirmed!\nVehicle: ${selectedVehicleData.name}\nPrice: $${calculatePrice()}\nSender: ${senderPhone}\nReceiver: ${receiverPhone}`);
+    alert(
+      `Booking confirmed!\nVehicle: ${
+        selectedVehicleData.name
+      }\nPrice: $${calculatePrice()}\nSender: ${senderPhone}\nReceiver: ${receiverPhone}`
+    );
   };
 
   const handleFindRoute = async () => {
@@ -126,7 +132,9 @@ const TransportationApp = () => {
 
   const calculatePrice = () => {
     if (!routeInfo || !selectedVehicleData) return 0;
-    const pricePerKm = parseFloat(selectedVehicleData.price.replace("$", "").replace("/km", ""));
+    const pricePerKm = parseFloat(
+      selectedVehicleData.price.replace("$", "").replace("/km", "")
+    );
     return (routeInfo.distanceValue * pricePerKm).toFixed(2);
   };
 
@@ -142,8 +150,12 @@ const TransportationApp = () => {
                     <Navigation className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">RouteGo</h1>
-                    <p className="text-sm text-gray-600">Smart Transportation Planning</p>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      RouteGo
+                    </h1>
+                    <p className="text-sm text-gray-600">
+                      Smart Transportation Planning
+                    </p>
                   </div>
                 </div>
                 <Badge variant="secondary" className="px-3 py-1">
@@ -165,7 +177,10 @@ const TransportationApp = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="origin" className="flex items-center space-x-2">
+                    <Label
+                      htmlFor="origin"
+                      className="flex items-center space-x-2"
+                    >
                       <MapPin className="h-4 w-4 text-green-600" />
                       <span>From</span>
                     </Label>
@@ -179,7 +194,10 @@ const TransportationApp = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="destination" className="flex items-center space-x-2">
+                    <Label
+                      htmlFor="destination"
+                      className="flex items-center space-x-2"
+                    >
                       <Target className="h-4 w-4 text-red-600" />
                       <span>To</span>
                     </Label>
@@ -210,7 +228,9 @@ const TransportationApp = () => {
             <div className="text-center">
               <MapPin className="h-12 w-12 text-blue-600 mx-auto mb-4" />
               <p className="text-gray-700 font-semibold">Map View</p>
-              <p className="text-sm text-gray-600 mt-2">Route: {origin} → {destination}</p>
+              <p className="text-sm text-gray-600 mt-2">
+                Route: {origin} → {destination}
+              </p>
             </div>
           </div>
 
@@ -346,41 +366,28 @@ const TransportationApp = () => {
                       </Button>
                     </div>
 
-                    {routeInfo && (
-                      <div className="flex items-center justify-around mb-6 p-4 bg-blue-50 rounded-xl">
-                        <div className="text-center">
-                          <Clock className="h-5 w-5 text-blue-600 mx-auto mb-1" />
-                          <div className="text-xs text-gray-600">Duration</div>
-                          <div className="font-semibold">{routeInfo.duration}</div>
-                        </div>
-                        <div className="text-center">
-                          <Route className="h-5 w-5 text-green-600 mx-auto mb-1" />
-                          <div className="text-xs text-gray-600">Distance</div>
-                          <div className="font-semibold">{routeInfo.distance}</div>
-                        </div>
-                        {selectedVehicleData && (
-                          <div className="text-center">
-                            <DollarSign className="h-5 w-5 text-green-600 mx-auto mb-1" />
-                            <div className="text-xs text-gray-600">Price</div>
-                            <div className="font-semibold">${calculatePrice()}</div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
                     <div className="overflow-hidden">
                       <div
                         className="flex transition-transform duration-500 ease-out"
-                        style={{ transform: `translateX(-${currentStep * 100}%)`, width: "300%" }}
+                        style={{
+                          transform: `translateX(-${currentStep * 33}%)`,
+                          width: "300%",
+                        }}
                       >
-                        <div className="w-full px-2" style={{ width: "33.333%" }}>
+                        <div
+                          className="w-full px-2"
+                          style={{ width: "33.333%" }}
+                        >
                           <div className="grid grid-cols-1 gap-4 mb-6 max-h-[40vh] overflow-y-auto">
                             {vehicleTypes.map((vehicle) => {
                               const IconComponent = vehicle.icon;
                               return (
                                 <div
                                   key={vehicle.id}
-                                  onClick={() => setSelectedVehicle(vehicle.id)}
+                                  onClick={() => {
+                                    console.log("Vehicule chosen:", vehicle.id);
+                                    setSelectedVehicle(vehicle.id);
+                                  }}
                                   className={`p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 active:scale-95 ${
                                     selectedVehicle === vehicle.id
                                       ? "border-blue-500 bg-blue-50 shadow-lg"
@@ -388,13 +395,21 @@ const TransportationApp = () => {
                                   }`}
                                 >
                                   <div className="flex items-center space-x-4">
-                                    <div className={`p-3 rounded-xl ${vehicle.color} text-white`}>
+                                    <div
+                                      className={`p-3 rounded-xl ${vehicle.color} text-white`}
+                                    >
                                       <IconComponent className="h-6 w-6" />
                                     </div>
                                     <div>
-                                      <h4 className="font-semibold text-gray-900">{vehicle.name}</h4>
-                                      <div className="text-xs text-gray-600 mt-1">{vehicle.capacity}</div>
-                                      <div className="font-bold text-green-600 mt-1">{vehicle.price}</div>
+                                      <h4 className="font-semibold text-gray-900">
+                                        {vehicle.name}
+                                      </h4>
+                                      <div className="text-xs text-gray-600 mt-1">
+                                        {vehicle.capacity}
+                                      </div>
+                                      <div className="font-bold text-green-600 mt-1">
+                                        {vehicle.price}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -412,10 +427,16 @@ const TransportationApp = () => {
                           )}
                         </div>
 
-                        <div className="w-full px-2" style={{ width: "33.333%" }}>
+                        <div
+                          className="w-full px-2"
+                          style={{ width: "33.333%" }}
+                        >
                           <div className="space-y-6 mb-6">
                             <div className="space-y-2">
-                              <Label htmlFor="senderPhone" className="text-base font-semibold">
+                              <Label
+                                htmlFor="senderPhone"
+                                className="text-base font-semibold"
+                              >
                                 Sender Phone Number
                               </Label>
                               <Input
@@ -429,7 +450,10 @@ const TransportationApp = () => {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="receiverPhone" className="text-base font-semibold">
+                              <Label
+                                htmlFor="receiverPhone"
+                                className="text-base font-semibold"
+                              >
                                 Receiver Phone Number
                               </Label>
                               <Input
@@ -437,7 +461,9 @@ const TransportationApp = () => {
                                 type="tel"
                                 placeholder="+33 6 98 76 54 32"
                                 value={receiverPhone}
-                                onChange={(e) => setReceiverPhone(e.target.value)}
+                                onChange={(e) =>
+                                  setReceiverPhone(e.target.value)
+                                }
                                 className="py-6 text-lg"
                               />
                             </div>
@@ -461,7 +487,10 @@ const TransportationApp = () => {
                           </div>
                         </div>
 
-                        <div className="w-full px-2" style={{ width: "33.333%" }}>
+                        <div
+                          className="w-full px-2"
+                          style={{ width: "33.333%" }}
+                        >
                           <div className="mb-6">
                             <input
                               ref={fileInputRef}
@@ -483,7 +512,9 @@ const TransportationApp = () => {
                                   <div className="text-lg font-semibold text-gray-700">
                                     Upload Item Photo
                                   </div>
-                                  <div className="text-sm text-gray-500">Click to select an image</div>
+                                  <div className="text-sm text-gray-500">
+                                    Click to select an image
+                                  </div>
                                 </div>
                               </div>
                             ) : (
